@@ -350,9 +350,9 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--ink);font-si
 .btn-export{display:inline-flex;align-items:center;gap:8px;padding:9px 20px;background:var(--green);color:#fff;border:none;border-radius:var(--r);font-family:'Jost',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;box-shadow:0 2px 8px rgba(45,122,58,0.3);}
 .btn-export:hover{background:#256830;box-shadow:0 4px 14px rgba(45,122,58,0.4);}
 .btn-export svg{width:16px;height:16px;fill:#fff;}
-.btn-add{display:inline-flex;align-items:center;gap:8px;padding:9px 20px;background:var(--orange);color:#fff;border:none;border-radius:var(--r);font-family:'Jost',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;box-shadow:0 2px 8px rgba(212,97,26,0.3);}
-.btn-add:hover{background:#A84D14;}
-.btn-add svg{width:16px;height:16px;fill:#fff;}
+
+
+
 
 /* STAT CARDS */
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
@@ -846,10 +846,7 @@ tbody td{padding:10px 16px;font-size:13px;color:var(--ink2);white-space:nowrap;}
       </select>
     </div>
     <div style="display:flex;gap:8px;">
-      <button class="btn-add" onclick="addSample()">
-        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-        Add test entry
-      </button>
+
       <button class="btn-export" onclick="requestExportAuth()">
         <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
         Export to Excel
@@ -1137,34 +1134,7 @@ var sampleDietary = ['No restrictions','Vegetarian','Halal','Gluten-free','No re
 
 function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
-function addSample(){
-  var n = rand(sampleNames);
-  var r = {
-    ref: 'SOFAR-2026-' + String(1000 + registrations.length + 1),
-    firstName: n[0], lastName: n[1],
-    role: rand(sampleRoles),
-    institution: rand(sampleInst),
-    country: rand(sampleCountries),
-    nationality: rand(sampleCountries) + 'n',
-    email: n[0].toLowerCase() + '.' + n[1].toLowerCase() + '@example.org',
-    phone: '+258 8' + Math.floor(10000000 + Math.random()*89999999),
-    whatsapp: '',
-    attendance: rand(sampleAtt),
-    travel: rand(['SOFAR shuttle','Own vehicle','International flight']),
-    accommodation: rand(sampleAccom),
-    checkin: '2026-09-13',
-    checkout: '2026-09-16',
-    participation: rand(samplePres),
-    dietary: rand(sampleDietary),
-    accessibility: 'None required',
-    comments: '',
-    submittedAt: new Date().toISOString()
-  };
-  registrations.push(r);
-  save();
-  currentPage = 1;
-  render();
-}
+
 
 // ── FILTERING ────────────────────────────────────────────────
 function getFiltered(){
