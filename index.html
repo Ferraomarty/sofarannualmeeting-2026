@@ -641,13 +641,8 @@ tbody td{padding:10px 16px;font-size:13px;color:var(--ink2);white-space:nowrap;}
   };
 
   // ── DELETE from Firestore ──
-  window.deleteFromFirestore = async function(id) {
-    try {
-      await deleteDoc(doc(db, "registrations", id));
-      console.log("Deleted from Firestore:", id);
-    } catch(e) {
-      console.error("Firestore delete error:", e);
-    }
+  window.deleteFromFirestore = function(id) {
+    return deleteDoc(doc(db, "registrations", id));
   };
 
   // Auto-load when dashboard tab opens
@@ -1784,13 +1779,29 @@ function confirmDelete(){
     deleteFailures = 0;
     // Perform the actual delete
     var entry = registrations[pendingDeleteIdx];
-    if(window.deleteFromFirestore && entry._id) window.deleteFromFirestore(entry._id);
-    registrations.splice(pendingDeleteIdx, 1);
+    var idxToDelete = pendingDeleteIdx;
     pendingDeleteIdx = null;
-    save();
-    render();
-    // Reset modal back to export mode
     resetAuthModal();
+
+    // Delete from Firestore first, then update local state
+    if(window.deleteFromFirestore && entry._id) {
+      window.deleteFromFirestore(entry._id)
+        .then(function() {
+          registrations.splice(idxToDelete, 1);
+          save();
+          render();
+          console.log('Deleted successfully:', entry.ref);
+        })
+        .catch(function(err) {
+          console.error('Delete failed:', err);
+          alert('Error deleting from database: ' + err.message + '\n\nPlease update Firestore Rules to allow delete.');
+        });
+    } else {
+      // Fallback: delete locally only
+      registrations.splice(idxToDelete, 1);
+      save();
+      render();
+    }
   } else {
     deleteFailures++;
     document.getElementById('authAttemptsMsg').style.display = 'block';
