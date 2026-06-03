@@ -478,9 +478,190 @@ tbody td{padding:10px 16px;font-size:13px;color:var(--ink2);white-space:nowrap;}
 .auth-attempts{font-size:11px;color:#9A9A9A;text-align:center;margin-top:0.875rem;}
 .auth-attempts span{color:#C0251A;font-weight:500;}
 
+
+/* ── LIGHTBOX ── */
+.lightbox-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.92);
+  z-index:5000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:1rem;
+  animation:lbFadeIn .2s ease;
+}
+.lightbox-overlay.open{display:flex;}
+@keyframes lbFadeIn{from{opacity:0;}to{opacity:1;}}
+
+.lightbox-content{
+  position:relative;
+  max-width:1100px;
+  max-height:90vh;
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.lightbox-img-wrap{
+  position:relative;
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.lightbox-img{
+  max-width:100%;
+  max-height:80vh;
+  object-fit:contain;
+  border-radius:8px;
+  box-shadow:0 24px 80px rgba(0,0,0,0.6);
+  animation:lbSlide .22s ease;
+}
+@keyframes lbSlide{from{opacity:0;transform:scale(0.96);}to{opacity:1;transform:scale(1);}}
+
+.lightbox-caption{
+  margin-top:14px;
+  font-family:'Jost',sans-serif;
+  font-size:14px;font-weight:300;
+  color:rgba(255,255,255,0.7);
+  letter-spacing:0.5px;
+  text-align:center;
+}
+.lightbox-counter{
+  font-size:12px;color:rgba(255,255,255,0.4);
+  margin-top:4px;letter-spacing:0.5px;
+}
+.lb-close{
+  position:fixed;top:20px;right:24px;
+  width:40px;height:40px;
+  background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:background .15s;z-index:5001;
+}
+.lb-close:hover{background:rgba(255,255,255,0.2);}
+.lb-close svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;}
+
+.lb-nav{
+  position:fixed;top:50%;transform:translateY(-50%);
+  width:48px;height:48px;
+  background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .15s;z-index:5001;
+}
+.lb-nav:hover{background:rgba(255,255,255,0.25);}
+.lb-nav svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.lb-prev{left:20px;}
+.lb-next{right:20px;}
+.lb-nav:disabled{opacity:0.2;cursor:default;}
+
+/* Make venue images clickable */
+.venue-img{cursor:pointer;}
+.venue-img::after{
+  content:'';
+  position:absolute;inset:0;
+  background:rgba(0,0,0,0);
+  transition:background .2s;
+  border-radius:0;
+}
+.venue-img:hover::after{background:rgba(0,0,0,0.1);}
+
+/* Zoom icon on hover */
+.venue-img .zoom-icon{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%) scale(0.7);
+  width:40px;height:40px;
+  background:rgba(255,255,255,0.9);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:all .2s;
+  pointer-events:none;z-index:2;
+}
+.venue-img .zoom-icon svg{width:18px;height:18px;stroke:#1B4332;fill:none;stroke-width:2;stroke-linecap:round;}
+.venue-img:hover .zoom-icon{opacity:1;transform:translate(-50%,-50%) scale(1);}
+
+/* Thumbnail strip at bottom of lightbox */
+.lb-thumbs{
+  display:flex;gap:8px;margin-top:14px;
+  justify-content:center;flex-wrap:wrap;
+}
+.lb-thumb{
+  width:64px;height:44px;
+  border-radius:4px;overflow:hidden;cursor:pointer;
+  border:2px solid transparent;transition:border-color .15s;
+  flex-shrink:0;
+}
+.lb-thumb img{width:100%;height:100%;object-fit:cover;}
+.lb-thumb.active{border-color:var(--orange,#D4611A);}
+.lb-thumb:hover{border-color:rgba(255,255,255,0.5);}
+
 </style>
 </head>
 <body>
+
+<!-- ── FIREBASE ── -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDoNv17KngMFWbOpX7m1SEYA6n54O0djt0",
+    authDomain: "sofar-2026.firebaseapp.com",
+    projectId: "sofar-2026",
+    storageBucket: "sofar-2026.firebasestorage.app",
+    messagingSenderId: "1024335988084",
+    appId: "1:1024335988084:web:c1ad632b2909f1c910d821"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  // ── SAVE to Firestore when form submits ──
+  window.saveToFirestore = async function(entry) {
+    try {
+      await addDoc(collection(db, "registrations"), entry);
+      console.log("Saved to Firestore:", entry.ref);
+    } catch(e) {
+      console.error("Firestore save error:", e);
+    }
+  };
+
+  // ── LOAD from Firestore for dashboard ──
+  window.loadFromFirestore = function(callback) {
+    const q = query(collection(db, "registrations"), orderBy("submittedAt", "desc"));
+    onSnapshot(q, (snapshot) => {
+      const data = [];
+      snapshot.forEach(d => data.push({ _id: d.id, ...d.data() }));
+      callback(data);
+    });
+  };
+
+  // ── DELETE from Firestore ──
+  window.deleteFromFirestore = async function(id) {
+    try {
+      await deleteDoc(doc(db, "registrations", id));
+      console.log("Deleted from Firestore:", id);
+    } catch(e) {
+      console.error("Firestore delete error:", e);
+    }
+  };
+
+  // Auto-load when dashboard tab opens
+  window.addEventListener('firestoreReady', function() {
+    window.loadFromFirestore(function(data) {
+      registrations = data;
+      render();
+    });
+  });
+
+  // Signal ready
+  window.firestoreReady = true;
+  window.dispatchEvent(new Event('firestoreReady'));
+</script>
+
 
 <!-- TAB NAV -->
 <div class="tab-nav">
@@ -511,7 +692,7 @@ tbody td{padding:10px 16px;font-size:13px;color:var(--ink2);white-space:nowrap;}
       <h1>SOFAR Annual Meeting 2026<br><em>Visitor Registration Form</em></h1>
       <div class="hero-org">Southern Africa Research Capacity Network</div>
       <div class="hero-meta">
-        <div class="hm"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>Makaneta, Lugar do Mar — Mozambique</div>
+        <div class="hm"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>Macaneta, Lugar do Mar — Mozambique</div>
         <div class="hm"><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>13–19 September 2026</div>
         <div class="hm"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>PIs · Co-PIs · Students · Supervisors · Others</div>
       </div>
@@ -617,8 +798,8 @@ tbody td{padding:10px 16px;font-size:13px;color:var(--ink2);white-space:nowrap;}
     <div id="partial-block" style="display:none;"><div class="fg c2"><div class="field"><label>Arrival Date</label><input type="date" id="arrDate" min="2026-09-13" max="2026-09-19"/></div><div class="field"><label>Departure Date</label><input type="date" id="depDate" min="2026-09-13" max="2026-09-19"/></div></div></div>
   </div>
   <div class="card"><div class="card-title">Logistics</div>
-    <div class="field" style="margin-bottom:1.25rem;"><label>Travel to Makaneta <span class="req">*</span></label>
-      <div class="pills"><div class="pill-item"><input type="radio" name="travel" id="tr-sh" value="SOFAR shuttle"/><label for="tr-sh">SOFAR shuttle</label></div><div class="pill-item"><input type="radio" name="travel" id="tr-own" value="Own vehicle"/><label for="tr-own">Own vehicle</label></div><div class="pill-item"><input type="radio" name="travel" id="tr-int" value="International flight + transfer"/><label for="tr-int">International flight</label></div><div class="pill-item"><input type="radio" name="travel" id="tr-tbc" value="To be confirmed"/><label for="tr-tbc">To be confirmed</label></div></div>
+    <div class="field" style="margin-bottom:1.25rem;"><label>Travel to Macaneta <span class="req">*</span></label>
+      <div class="pills"><div class="pill-item"><input type="radio" name="travel" id="tr-sh" value="SOFAR shuttle"/><label for="tr-sh">SOFAR shuttle</label></div><div class="pill-item"><input type="radio" name="travel" id="tr-own" value="Own vehicle"/><label for="tr-own">Own vehicle</label></div><div class="pill-item"><input type="radio" name="travel" id="tr-tbc" value="To be confirmed"/><label for="tr-tbc">To be confirmed</label></div></div>
       <span class="err-msg" id="travel-err" style="display:none;">Please select your travel mode.</span>
     </div>
     <div class="rule"></div>
@@ -703,7 +884,7 @@ tbody td{padding:10px 16px;font-size:13px;color:var(--ink2);white-space:nowrap;}
     <p>Thank you for registering for the SOFAR Annual Meeting 2026. A confirmation email will be sent to the address provided.</p>
     <div class="ref" id="ref-num">REF: SOFAR-2026-0001</div>
     <div class="suc-info"><h3>Event Summary</h3>
-      <div class="suc-row"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>Makaneta, Lugar do Mar — Mozambique</div>
+      <div class="suc-row"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>Macaneta, Lugar do Mar — Mozambique</div>
       <div class="suc-row"><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>Monday–Friday, 13–19 September 2026</div>
       <div class="suc-row"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>Confirmation sent to registered email</div>
     </div>
@@ -730,7 +911,7 @@ tbody td{padding:10px 16px;font-size:13px;color:var(--ink2);white-space:nowrap;}
       <div class="sb-stripe"></div>
     </div>
     <div class="sb-body">
-      <div class="sb-item"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg><div><div class="si-label">Location</div><div class="si-val">Makaneta, Lugar do Mar<br><span style="font-size:12px;color:var(--ink3);">Mozambique</span></div></div></div>
+      <div class="sb-item"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg><div><div class="si-label">Location</div><div class="si-val">Macaneta, Lugar do Mar<br><span style="font-size:12px;color:var(--ink3);">Mozambique</span></div></div></div>
       <div class="sb-item"><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg><div><div class="si-label">Dates</div><div class="si-val">13–19 September 2026<br><span style="font-size:12px;color:var(--ink3);">Monday to Friday</span></div></div></div>
       <div class="sb-item"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg><div><div class="si-label">Eligible Attendees</div><div class="si-val" style="font-size:12px;line-height:1.65;">All PIs &amp; Co-PIs<br>All Students<br>Supervisors (optional)<br>Others (specify on form)</div></div></div>
     </div>
@@ -761,11 +942,11 @@ tbody td{padding:10px 16px;font-size:13px;color:var(--ink2);white-space:nowrap;}
       <a class="venue-link" href="https://lugardomar.com" target="_blank">Visit website <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
     </div>
     <div class="venue-grid">
-      <div class="venue-img main"><img src="https://www.africastay.com/media/website/8986.jpg" alt="Lugar do Mar" loading="lazy"/><div class="caption">Lugar do Mar · Macaneta</div></div>
-      <div class="venue-img t1"><img src="https://www.africastay.com/media/website/8986-extra-image_1.jpg" alt="Piscina" loading="lazy"/><div class="caption">Piscina</div></div>
-      <div class="venue-img t2"><img src="https://www.africastay.com/media/website/8986-extra-image_2.jpg" alt="Praia" loading="lazy"/><div class="caption">Praia</div></div>
-      <div class="venue-img t3"><img src="https://www.africastay.com/media/website/8986-extra-image_3.jpg" alt="Chalet" loading="lazy"/><div class="caption">Chalets</div></div>
-      <div class="venue-img t4"><img src="https://www.africastay.com/media/website/8986-extra-image_4.jpg" alt="Restaurante" loading="lazy"/><div class="caption">Restaurante</div></div>
+      <div class="venue-img main" onclick="openLightbox(0)"><img src="https://www.africastay.com/media/website/8986.jpg" alt="Lugar do Mar" loading="lazy"/><div class="caption">Lugar do Mar · Macaneta</div><div class="zoom-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div></div>
+      <div class="venue-img t1" onclick="openLightbox(1)"><img src="https://www.africastay.com/media/website/8986-extra-image_1.jpg" alt="Piscina" loading="lazy"/><div class="caption">Piscina</div><div class="zoom-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div></div>
+      <div class="venue-img t2" onclick="openLightbox(2)"><img src="https://www.africastay.com/media/website/8986-extra-image_2.jpg" alt="Praia" loading="lazy"/><div class="caption">Praia</div><div class="zoom-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div></div>
+      <div class="venue-img t3" onclick="openLightbox(3)"><img src="https://www.africastay.com/media/website/8986-extra-image_3.jpg" alt="Chalets" loading="lazy"/><div class="caption">Chalets</div><div class="zoom-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div></div>
+      <div class="venue-img t4" onclick="openLightbox(4)"><img src="https://www.africastay.com/media/website/8986-extra-image_4.jpg" alt="Restaurante" loading="lazy"/><div class="caption">Restaurante</div><div class="zoom-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div></div>
     </div>
     <div class="venue-info">
       <div class="venue-info-item"><svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg><span><strong>Macaneta Peninsula</strong>, Marracuene, Maputo Province</span></div>
@@ -780,7 +961,7 @@ tbody td{padding:10px 16px;font-size:13px;color:var(--ink2);white-space:nowrap;}
 <div class="site-footer">
   <div class="footer-top">
     <div class="footer-top-inner">
-      <div class="footer-top-text"><h3>SOFAR Annual Meeting 2026</h3><p>Southern Africa Research Capacity Network &nbsp;&middot;&nbsp; Makaneta, Mozambique &nbsp;&middot;&nbsp; 13&ndash;19 September 2026</p></div>
+      <div class="footer-top-text"><h3>SOFAR Annual Meeting 2026</h3><p>Southern Africa Research Capacity Network &nbsp;&middot;&nbsp; Macaneta, Mozambique &nbsp;&middot;&nbsp; 13&ndash;19 September 2026</p></div>
       <div class="footer-orange-pill">Open for Registration</div>
     </div>
   </div>
@@ -814,7 +995,7 @@ tbody td{padding:10px 16px;font-size:13px;color:var(--ink2);white-space:nowrap;}
     <div class="topbar-title">
       <div>
         <h1>SOFAR Annual Meeting 2026 &mdash; Registration Dashboard</h1>
-        <span>Southern Africa Research Capacity Network &nbsp;·&nbsp; Makaneta, Mozambique &nbsp;·&nbsp; 13–19 Sep 2026</span>
+        <span>Southern Africa Research Capacity Network &nbsp;·&nbsp; Macaneta, Mozambique &nbsp;·&nbsp; 13–19 Sep 2026</span>
       </div>
     </div>
     <div class="topbar-badge">Admin Panel</div>
@@ -1088,6 +1269,8 @@ function submitForm(){
     registrations.push(entry);
     save();
     updateBadge();
+    // Save to Firestore
+    if(window.saveToFirestore) window.saveToFirestore(entry);
     document.getElementById('sec5').classList.remove('active');
     document.getElementById('sec-ok').classList.add('active');
     for(var i=1;i<=5;i++){
@@ -1420,10 +1603,24 @@ render();
 var _origRender = render;
 render = function(){ _origRender(); updateBadge(); };
 
-/* Init */
+/* Init — load from localStorage first, then sync with Firestore */
 try{ var saved=localStorage.getItem('sofar_registrations'); if(saved) registrations=JSON.parse(saved); }catch(e){}
 render();
 updateBadge();
+
+// Sync with Firestore when ready
+function initFirestoreSync() {
+  if(window.firestoreReady && window.loadFromFirestore) {
+    window.loadFromFirestore(function(data) {
+      registrations = data;
+      try{ localStorage.setItem('sofar_registrations', JSON.stringify(data)); }catch(e){}
+      render();
+      updateBadge();
+    });
+  }
+}
+window.addEventListener('firestoreReady', initFirestoreSync);
+if(window.firestoreReady) initFirestoreSync();
 
 /* ── EXPORT AUTH ─────────────────────────────── */
 var authFailures = 0;
@@ -1553,6 +1750,8 @@ function confirmDelete(){
     closeAuthModal();
     deleteFailures = 0;
     // Perform the actual delete
+    var entry = registrations[pendingDeleteIdx];
+    if(window.deleteFromFirestore && entry._id) window.deleteFromFirestore(entry._id);
     registrations.splice(pendingDeleteIdx, 1);
     pendingDeleteIdx = null;
     save();
@@ -1599,6 +1798,70 @@ closeAuthModal = function(){
   resetAuthModal();
 };
 
+
+/* ── LIGHTBOX ── */
+var lbPhotos = [
+  {src:"https://www.africastay.com/media/website/8986.jpg",           caption:"Lugar do Mar · Macaneta, Mozambique"},
+  {src:"https://www.africastay.com/media/website/8986-extra-image_1.jpg", caption:"Piscina"},
+  {src:"https://www.africastay.com/media/website/8986-extra-image_2.jpg", caption:"Praia"},
+  {src:"https://www.africastay.com/media/website/8986-extra-image_3.jpg", caption:"Chalets"},
+  {src:"https://www.africastay.com/media/website/8986-extra-image_4.jpg", caption:"Restaurante"},
+];
+var lbCurrent = 0;
+
+function openLightbox(idx){
+  lbCurrent = idx;
+  document.getElementById('lbOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  lbShow();
+  lbBuildThumbs();
+}
+
+function closeLightbox(){
+  document.getElementById('lbOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function lbShow(){
+  var p = lbPhotos[lbCurrent];
+  var img = document.getElementById('lbImg');
+  img.style.animation = 'none';
+  img.offsetHeight;
+  img.style.animation = 'lbSlide .22s ease';
+  img.src = p.src;
+  img.alt = p.caption;
+  document.getElementById('lbCaption').textContent = p.caption;
+  document.getElementById('lbCounter').textContent = (lbCurrent+1) + ' / ' + lbPhotos.length;
+  document.getElementById('lbPrev').disabled = lbCurrent === 0;
+  document.getElementById('lbNext').disabled = lbCurrent === lbPhotos.length-1;
+  // Update active thumb
+  document.querySelectorAll('.lb-thumb').forEach(function(t,i){
+    t.classList.toggle('active', i===lbCurrent);
+  });
+}
+
+function lbNav(dir){
+  var n = lbCurrent + dir;
+  if(n >= 0 && n < lbPhotos.length){ lbCurrent = n; lbShow(); }
+}
+
+function lbBuildThumbs(){
+  var el = document.getElementById('lbThumbs');
+  el.innerHTML = lbPhotos.map(function(p,i){
+    return '<div class="lb-thumb'+(i===lbCurrent?' active':'') +'" onclick="lbCurrent='+i+';lbShow()">' +
+      '<img src="'+p.src+'" alt="'+p.caption+'" loading="lazy"/>' +
+    '</div>';
+  }).join('');
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', function(e){
+  if(!document.getElementById('lbOverlay').classList.contains('open')) return;
+  if(e.key==='ArrowLeft')  lbNav(-1);
+  if(e.key==='ArrowRight') lbNav(1);
+  if(e.key==='Escape')     closeLightbox();
+});
+
 </script>
 
 <!-- ── EXPORT AUTH MODAL ── -->
@@ -1632,6 +1895,28 @@ closeAuthModal = function(){
     <div class="auth-attempts" id="authAttemptsMsg" style="display:none;">
       Failed attempts: <span id="authFailCount">0</span> / 3
     </div>
+  </div>
+</div>
+
+
+<!-- ── LIGHTBOX ── -->
+<div class="lightbox-overlay" id="lbOverlay" onclick="if(event.target===this)closeLightbox()">
+  <button class="lb-close" onclick="closeLightbox()">
+    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <button class="lb-nav lb-prev" id="lbPrev" onclick="lbNav(-1)">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <button class="lb-nav lb-next" id="lbNext" onclick="lbNav(1)">
+    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+  <div class="lightbox-content">
+    <div class="lightbox-img-wrap">
+      <img class="lightbox-img" id="lbImg" src="" alt=""/>
+    </div>
+    <div class="lightbox-caption" id="lbCaption"></div>
+    <div class="lightbox-counter" id="lbCounter"></div>
+    <div class="lb-thumbs" id="lbThumbs"></div>
   </div>
 </div>
 
