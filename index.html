@@ -599,6 +599,7 @@ tbody td{padding:10px 16px;font-size:13px;color:var(--ink2);white-space:nowrap;}
 .lb-thumb:hover{border-color:rgba(255,255,255,0.5);}
 
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
 
@@ -890,12 +891,10 @@ tbody td{padding:10px 16px;font-size:13px;color:var(--ink2);white-space:nowrap;}
     </div>
     <div style="display:flex;gap:10px;justify-content:center;margin-top:1.5rem;flex-wrap:wrap;">
       <button class="btn btn-ghost" onclick="window.print()">Print Confirmation</button>
-      <a href="sofar_dashboard.html" target="_blank" style="text-decoration:none;">
-        <button class="btn btn-primary" style="background:var(--green);box-shadow:0 2px 8px rgba(45,122,58,0.3);">
-          <svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:#fff;"><path d="M3 3h7v7H3zm0 11h7v7H3zm11-11h7v7h-7zm0 11h7v7h-7z"/></svg>
-          View Dashboard
-        </button>
-      </a>
+      <button class="btn btn-primary" onclick="switchTab('dashboard')" style="background:var(--green);box-shadow:0 2px 8px rgba(45,122,58,0.3);">
+        <svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:#fff;"><path d="M3 3h7v7H3zm0 11h7v7H3zm11-11h7v7h-7zm0 11h7v7h-7z"/></svg>
+        View Dashboard
+      </button>
     </div>
   </div></div>
 </div>
@@ -1241,6 +1240,38 @@ document.querySelectorAll('input[name="role"]').forEach(function(r){r.addEventLi
 document.getElementById('d-none').addEventListener('change',function(){if(this.checked)document.querySelectorAll('#diet-group input').forEach(function(c){if(c.id!=='d-none')c.checked=false;});});
 document.querySelectorAll('input,select,textarea').forEach(function(el){el.addEventListener('input',function(){var f=el.closest('.field');if(f&&f.classList.contains('error')&&el.value.trim())f.classList.remove('error');});el.addEventListener('change',function(){var f=el.closest('.field');if(f&&f.classList.contains('error')&&el.value)f.classList.remove('error');});});
 
+
+/* ── EMAIL CONFIRMATION (EmailJS) ── */
+(function(){
+  if(typeof emailjs !== 'undefined') {
+    emailjs.init({ publicKey: 'IeLRzFKOG_knAZKKg' });
+  }
+})();
+
+function sendConfirmationEmail(entry) {
+  if(typeof emailjs === 'undefined') {
+    console.warn('EmailJS not loaded');
+    return;
+  }
+  var templateParams = {
+    to_email:    entry.email,
+    to_name:     entry.firstName + ' ' + entry.lastName,
+    ref_number:  entry.ref,
+    role:        entry.role,
+    institution: entry.institution,
+    attendance:  entry.attendance,
+    accommodation: entry.accommodation,
+    event_date:  '13–19 September 2026',
+    event_location: 'Lugar do Mar, Macaneta, Mozambique'
+  };
+  emailjs.send('service_72cw4rp', 'template_irts9da', templateParams)
+    .then(function() {
+      console.log('Confirmation email sent to', entry.email);
+    }, function(err) {
+      console.error('Email send failed:', err);
+    });
+}
+
 /* ── OVERRIDE submitForm to go to dashboard ── */
 function submitForm(){
   if(!validate(5))return;
@@ -1271,6 +1302,8 @@ function submitForm(){
     updateBadge();
     // Save to Firestore
     if(window.saveToFirestore) window.saveToFirestore(entry);
+    // Send confirmation email
+    sendConfirmationEmail(entry);
     document.getElementById('sec5').classList.remove('active');
     document.getElementById('sec-ok').classList.add('active');
     for(var i=1;i<=5;i++){
