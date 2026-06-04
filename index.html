@@ -149,7 +149,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 /* ── ROLE GRID ── */
 .role-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
 @media(min-width:480px){.role-grid{grid-template-columns:repeat(3,1fr);}}
-@media(min-width:700px){.role-grid{grid-template-columns:repeat(5,1fr);}}
+@media(min-width:700px){.role-grid{grid-template-columns:repeat(6,1fr);}}
 .role-item{position:relative;}
 .role-item input{position:absolute;opacity:0;width:0;height:0;}
 .role-item label{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 10px;border:1px solid var(--border2);border-radius:var(--rl);font-size:13px;cursor:pointer;transition:all .15s;text-align:center;line-height:1.3;color:var(--ink2);background:var(--cream);}
@@ -730,13 +730,28 @@ tbody td{padding:10px 16px;font-size:13px;color:var(--ink2);white-space:nowrap;}
   <div class="card"><div class="card-title">Role at SOFAR</div>
     <div class="role-grid">
       <div class="role-item"><input type="radio" name="role" id="r-pi" value="Principal Investigator (PI)"/><label for="r-pi"><div class="role-icon" style="background:#EBF5EC;"><svg viewBox="0 0 24 24" fill="none" stroke="#2D7A3A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7"/><path d="M15 14l2 2 4-4"/></svg></div>P. Investigator</label></div>
-      <div class="role-item"><input type="radio" name="role" id="r-copi" value="Co-Principal Investigator"/><label for="r-copi"><div class="role-icon" style="background:#FDF0E8;"><svg viewBox="0 0 24 24" fill="none" stroke="#D4611A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><circle cx="15" cy="7" r="3"/><path d="M3 20c0-3 2.7-5 6-5"/><path d="M21 20c0-3-2.7-5-6-5"/></svg></div>Co-PI</label></div>
-      <div class="role-item"><input type="radio" name="role" id="r-cand" value="Student"/><label for="r-cand"><div class="role-icon" style="background:#FBEDEC;"><svg viewBox="0 0 24 24" fill="none" stroke="#C0251A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 1.5 3 6 3s6-1 6-3v-5"/></svg></div>Student</label></div>
+      <div class="role-item"><input type="radio" name="role" id="r-copi" value="Co-PI"/><label for="r-copi"><div class="role-icon" style="background:#FDF0E8;"><svg viewBox="0 0 24 24" fill="none" stroke="#D4611A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><circle cx="15" cy="7" r="3"/><path d="M3 20c0-3 2.7-5 6-5"/><path d="M21 20c0-3-2.7-5-6-5"/></svg></div>Co-PI</label></div>
+      <div class="role-item"><input type="radio" name="role" id="r-cpi" value="Country PI"/><label for="r-cpi"><div class="role-icon" style="background:#EBF5EC;"><svg viewBox="0 0 24 24" fill="none" stroke="#2D7A3A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M12 14c-5 0-8 1.5-8 3v1h16v-1c0-1.5-3-3-8-3z"/><path d="M17 5l3 3-3 3"/></svg></div>Country PI</label></div>
+      <div class="role-item"><input type="radio" name="role" id="r-pm" value="Project Manager"/><label for="r-pm"><div class="role-icon" style="background:#FDF6E0;"><svg viewBox="0 0 24 24" fill="none" stroke="#E8A800" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>Project Manager</label></div>
+      <div class="role-item"><input type="radio" name="role" id="r-pc" value="Project Coordinator"/><label for="r-pc"><div class="role-icon" style="background:#EEF2FF;"><svg viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>Project Coordinator</label></div>
+      <div class="role-item"><input type="radio" name="role" id="r-phd" value="PhD Fellow"/><label for="r-phd"><div class="role-icon" style="background:#FBEDEC;"><svg viewBox="0 0 24 24" fill="none" stroke="#C0251A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 1.5 3 6 3s6-1 6-3v-5"/></svg></div>PhD Fellow</label></div>
+      <div class="role-item"><input type="radio" name="role" id="r-msc" value="MSc Fellow"/><label for="r-msc"><div class="role-icon" style="background:#FDF0E8;"><svg viewBox="0 0 24 24" fill="none" stroke="#D4611A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 1.5 3 6 3s6-1 6-3v-5"/></svg></div>MSc Fellow</label></div>
+      <div class="role-item"><input type="radio" name="role" id="r-postdoc" value="Post-Doc Fellow"/><label for="r-postdoc"><div class="role-icon" style="background:#EBF5EC;"><svg viewBox="0 0 24 24" fill="none" stroke="#2D7A3A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><path d="M19 3l2 2-2 2"/></svg></div>Post-Doc Fellow</label></div>
       <div class="role-item"><input type="radio" name="role" id="r-sup" value="Supervisor"/><label for="r-sup"><div class="role-icon" style="background:#FDF6E0;"><svg viewBox="0 0 24 24" fill="none" stroke="#E8A800" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><path d="M17 3l2 2-4 4"/></svg></div>Supervisor</label></div>
+      <div class="role-item"><input type="radio" name="role" id="r-student" value="Student"/><label for="r-student"><div class="role-icon" style="background:#F3F0EA;"><svg viewBox="0 0 24 24" fill="none" stroke="#6B6B6B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 1.5 3 6 3s6-1 6-3v-5"/></svg></div>Student</label></div>
       <div class="role-item"><input type="radio" name="role" id="r-other" value="Other"/><label for="r-other"><div class="role-icon" style="background:#F3F0EA;"><svg viewBox="0 0 24 24" fill="none" stroke="#6B6B6B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></div>Other</label></div>
     </div>
     <div id="role-other-field" style="display:none;margin-top:0.875rem;"><div class="field"><label>Please specify your role</label><input type="text" id="roleOther" placeholder="Your role or position…"/></div></div>
     <span class="err-msg" id="role-err" style="display:none;margin-top:6px;">Please select your role.</span>
+  </div>
+  <div class="card"><div class="card-title">Position</div>
+    <div class="fg">
+      <div class="field">
+        <label>Position / Job Title <span class="req">*</span></label>
+        <input type="text" id="position" placeholder="e.g. Research Scientist, Study Coordinator, Field Officer…"/>
+        <span class="err-msg">Please enter your position.</span>
+      </div>
+    </div>
   </div>
   <div class="card"><div class="card-title">Institutional Affiliation</div>
     <div class="fg c2">
@@ -1157,7 +1172,7 @@ function updateUI(){
 }
 function validate(n){
   var ok=true;
-  if(n===1)ok=req('firstName')&req('lastName')&req('institution')&reqSel('country')&reqSel('nationality')&reqRadio('role','role-err');
+  if(n===1)ok=req('firstName')&req('lastName')&req('position')&req('institution')&reqSel('country')&reqSel('nationality')&reqRadio('role','role-err');
   else if(n===2)ok=req('email')&reqEmail()&req('phone')&req('whatsapp')&reqRadio('att','att-err')&reqRadio('travel','travel-err')&reqRadio('accom','accom-err');
   else if(n===4)ok=reqRadio('pres','pres-err');
   else if(n===5)ok=reqConsent();
@@ -1175,7 +1190,7 @@ function buildReview(){
   var html='';
   function block(t,s,pairs){html+='<div class="rev-block"><div class="rev-title">'+t+'<button onclick="goTo('+s+')">Edit</button></div><div class="rev-pairs">';pairs.forEach(function(p){html+='<div><div class="rp-label">'+p[0]+'</div>'+(p[1]?'<div class="rp-val">'+p[1]+'</div>':'<div class="rp-empty">Not provided</div>')+'</div>';});html+='</div></div>';}
   var roleVal=gr('role');if(roleVal==='Other'&&gv('roleOther'))roleVal='Other: '+gv('roleOther');
-  block('Personal Information',1,[['First name',gv('firstName')],['Last name',gv('lastName')],['Role',roleVal],['Institution',gv('institution')],['Department',gv('department')],['Country',gv('country')],['Nationality',gv('nationality')]]);
+  block('Personal Information',1,[['First name',gv('firstName')],['Last name',gv('lastName')],['Role',roleVal],['Position',gv('position')],['Institution',gv('institution')],['Department',gv('department')],['Country',gv('country')],['Nationality',gv('nationality')]]);
   block('Contact & Attendance',2,[['Email',gv('email')],['Phone',gv('phone')],['Attendance',gr('att')],['Travel',gr('travel')],['Accommodation',gr('accom')]]);
   block('Dietary & Accessibility',3,[['Dietary',gc('#diet-group input[type=checkbox]')||'Not specified'],['Accessibility',gc('.pills input[id^="a-"]:checked')||'None']]);
   block('Programme',4,[['Participation',gr('pres')],['Title',gv('presTitle')]]);
@@ -1195,6 +1210,7 @@ function submitForm(){
       ref:ref,
       firstName:gv('firstName'),lastName:gv('lastName'),
       role:gr('role')==='Other'&&gv('roleOther')?'Other: '+gv('roleOther'):gr('role'),
+      position:gv('position'),
       institution:gv('institution'),department:gv('department'),
       country:gv('country'),nationality:gv('nationality'),
       email:gv('email'),phone:gv('phone'),whatsapp:gv('whatsapp'),
@@ -1279,6 +1295,7 @@ function submitForm(){
       ref:ref,
       firstName:gv('firstName'),lastName:gv('lastName'),
       role:gr('role')==='Other'&&gv('roleOther')?'Other: '+gv('roleOther'):gr('role'),
+      position:gv('position'),
       institution:gv('institution'),department:gv('department'),
       country:gv('country'),nationality:gv('nationality'),
       email:gv('email'),phone:gv('phone'),whatsapp:gv('whatsapp'),
@@ -1522,7 +1539,7 @@ function exportExcel(){
   if(!registrations.length){ alert('No registrations to export.'); return; }
   
   var headers = [
-    'Reference','First Name','Last Name','Role','Institution','Department',
+    'Reference','First Name','Last Name','Role','Position','Institution','Department',
     'Country','Nationality','Email','Phone','WhatsApp',
     'Attendance','Travel','Accommodation','Check-in','Check-out',
     'Participation','Dietary Requirements','Accessibility',
@@ -1531,7 +1548,7 @@ function exportExcel(){
 
   var rows = registrations.map(function(r){
     return [
-      r.ref, r.firstName, r.lastName, r.role, r.institution, r.department||'',
+      r.ref, r.firstName, r.lastName, r.role, r.position||'', r.institution, r.department||'',
       r.country, r.nationality, r.email, r.phone, r.whatsapp||'',
       r.attendance, r.travel, r.accommodation, r.checkin||'', r.checkout||'',
       r.participation, r.dietary, r.accessibility,
@@ -1559,7 +1576,7 @@ function exportExcel(){
   
   // Set column widths
   ws1['!cols'] = [
-    {wch:16},{wch:14},{wch:14},{wch:22},{wch:26},{wch:20},
+    {wch:16},{wch:14},{wch:14},{wch:22},{wch:24},{wch:26},{wch:20},
     {wch:16},{wch:14},{wch:28},{wch:16},{wch:16},
     {wch:22},{wch:20},{wch:20},{wch:12},{wch:12},
     {wch:22},{wch:22},{wch:18},
