@@ -813,6 +813,25 @@ tbody td{padding:10px 16px;font-size:13px;color:var(--ink2);white-space:nowrap;}
       <div class="pills"><div class="pill-item"><input type="radio" name="travel" id="tr-sh" value="SOFAR shuttle"/><label for="tr-sh">SOFAR shuttle</label></div><div class="pill-item"><input type="radio" name="travel" id="tr-own" value="Own vehicle"/><label for="tr-own">Own vehicle</label></div><div class="pill-item"><input type="radio" name="travel" id="tr-tbc" value="To be confirmed"/><label for="tr-tbc">To be confirmed</label></div></div>
       <span class="err-msg" id="travel-err" style="display:none;">Please select your travel mode.</span>
     </div>
+    <div class="field" style="margin-bottom:1.25rem;">
+      <label>Arrival at Mavalane International Airport, Maputo <span class="opt">optional</span></label>
+      <div class="hint" style="margin-bottom:6px;">If arriving by plane, please indicate your expected arrival date and time so we can arrange transfer to Macaneta.</div>
+      <div class="fg c2">
+        <div class="field">
+          <label>Arrival Date <span class="opt">optional</span></label>
+          <input type="date" id="arrivalAirportDate" min="2026-09-10" max="2026-09-19"/>
+        </div>
+        <div class="field">
+          <label>Arrival Time <span class="opt">optional</span></label>
+          <input type="time" id="arrivalAirportTime" placeholder="e.g. 14:30"/>
+          <span class="hint">Local Mozambique time (CAT / UTC+2)</span>
+        </div>
+      </div>
+      <div class="field" style="margin-top:0.875rem;">
+        <label>Flight Number <span class="opt">optional</span></label>
+        <input type="text" id="flightNumber" placeholder="e.g. TM101, LA720, ET879…"/>
+      </div>
+    </div>
     <div class="rule"></div>
     <div class="field"><label>Accommodation <span class="req">*</span></label>
       <div class="pills">
@@ -1191,7 +1210,7 @@ function buildReview(){
   function block(t,s,pairs){html+='<div class="rev-block"><div class="rev-title">'+t+'<button onclick="goTo('+s+')">Edit</button></div><div class="rev-pairs">';pairs.forEach(function(p){html+='<div><div class="rp-label">'+p[0]+'</div>'+(p[1]?'<div class="rp-val">'+p[1]+'</div>':'<div class="rp-empty">Not provided</div>')+'</div>';});html+='</div></div>';}
   var roleVal=gr('role');if(roleVal==='Other'&&gv('roleOther'))roleVal='Other: '+gv('roleOther');
   block('Personal Information',1,[['First name',gv('firstName')],['Last name',gv('lastName')],['Role',roleVal],['Position',gv('position')],['Institution',gv('institution')],['Department',gv('department')],['Country',gv('country')],['Nationality',gv('nationality')]]);
-  block('Contact & Attendance',2,[['Email',gv('email')],['Phone',gv('phone')],['Attendance',gr('att')],['Travel',gr('travel')],['Accommodation',gr('accom')]]);
+  block('Contact & Attendance',2,[['Email',gv('email')],['Phone',gv('phone')],['Attendance',gr('att')],['Travel',gr('travel')],['Arrival at Mavalane',gv('arrivalAirportDate')+(gv('arrivalAirportTime')?' at '+gv('arrivalAirportTime'):'')],['Flight Number',gv('flightNumber')],['Accommodation',gr('accom')]]);
   block('Dietary & Accessibility',3,[['Dietary',gc('#diet-group input[type=checkbox]')||'Not specified'],['Accessibility',gc('.pills input[id^="a-"]:checked')||'None']]);
   block('Programme',4,[['Participation',gr('pres')],['Title',gv('presTitle')]]);
   document.getElementById('review-body').innerHTML=html;
@@ -1217,6 +1236,9 @@ function submitForm(){
       attendance:gr('att'),
       attOther:gv('attOtherText'),
       travel:gr('travel'),
+      arrivalAirportDate:gv('arrivalAirportDate'),
+      arrivalAirportTime:gv('arrivalAirportTime'),
+      flightNumber:gv('flightNumber'),
       accommodation:gr('accom'),
       checkin:gv('checkinDate'),checkout:gv('checkoutDate'),
       participation:gr('pres'),
@@ -1541,7 +1563,7 @@ function exportExcel(){
   var headers = [
     'Reference','First Name','Last Name','Role','Position','Institution','Department',
     'Country','Nationality','Email','Phone','WhatsApp',
-    'Attendance','Travel','Accommodation','Check-in','Check-out',
+    'Attendance','Travel','Arrival Date (Mavalane)','Arrival Time','Flight Number','Accommodation','Check-in','Check-out',
     'Participation','Dietary Requirements','Accessibility',
     'Comments','Submitted At'
   ];
@@ -1550,7 +1572,7 @@ function exportExcel(){
     return [
       r.ref, r.firstName, r.lastName, r.role, r.position||'', r.institution, r.department||'',
       r.country, r.nationality, r.email, r.phone, r.whatsapp||'',
-      r.attendance, r.travel, r.accommodation, r.checkin||'', r.checkout||'',
+      r.attendance, r.travel, r.arrivalAirportDate||'', r.arrivalAirportTime||'', r.flightNumber||'', r.accommodation, r.checkin||'', r.checkout||'',
       r.participation, r.dietary, r.accessibility,
       r.comments||'', r.submittedAt ? new Date(r.submittedAt).toLocaleString() : ''
     ];
